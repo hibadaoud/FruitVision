@@ -1,0 +1,30 @@
+# Utiliser une image officielle Node.js comme image de base 
+#alpine image are designed with security in mind
+FROM node:18.17.1-alpine3.17
+# FROM node:18.17.1
+
+# Update package list and upgrade the affected packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache busybox=1.35.0-r31 busybox-binsh=1.35.0-r31
+    
+# Install curl
+RUN apk add --no-cache curl
+
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /usr/src/app
+
+# Copier le fichier package.json et package-lock.json (si disponible)
+COPY package.json ./
+COPY package-lock.json ./
+
+# Installer les dépendances du projet
+RUN npm install
+
+# Copier les autres fichiers du projet dans le conteneur
+COPY . .
+
+# Exposer le port sur lequel votre app tourne
+EXPOSE 5000
+
+# Commande pour démarrer votre application
+CMD ["node", "server.js"]
